@@ -46,6 +46,7 @@ export async function runOnBlame(files: string[]): Promise<void> {
 
     for (const [file, results] of Object.entries(lintResults.files)) {
       const blameMap = await blame(file, blameOptions);
+      console.log(blameMap);
       let headerPrinted = false;
       for (const message of results.messages) {
         if (!blameMap.get(message.line)?.hash.startsWith('^')) {

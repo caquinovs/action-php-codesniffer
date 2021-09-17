@@ -5885,6 +5885,7 @@ async function runOnBlame(files) {
         };
         for (const [file, results] of Object.entries(lintResults.files)) {
             const blameMap = await git_blame_json_1.blame(file, blameOptions);
+            console.log(blameMap);
             let headerPrinted = false;
             for (const message of results.messages) {
                 if (!((_a = blameMap.get(message.line)) === null || _a === void 0 ? void 0 : _a.hash.startsWith('^'))) {
