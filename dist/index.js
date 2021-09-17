@@ -5868,10 +5868,15 @@ async function runOnBlame(files) {
         const dontFailOnWarning = core.getInput('fail_on_warnings') == 'false' ||
             core.getInput('fail_on_warnings') === 'off';
         if (!lintResults.totals.errors) {
-            if (dontFailOnWarning)
+            console.log(lintResults);
+            if (dontFailOnWarning) {
+                console.log(`The fail_on_warnings option has been set to ${dontFailOnWarning}`);
                 return;
-            if (!lintResults.totals.warnings)
+            }
+            if (!lintResults.totals.warnings) {
+                console.log('There are no warnings from phpcs');
                 return;
+            }
         }
         // blame files and output relevant errors
         const payload = github.context
