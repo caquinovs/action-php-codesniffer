@@ -39,6 +39,10 @@ export async function runOnBlame(files: string[]): Promise<void> {
     // blame files and output relevant errors
     const payload = github.context
       .payload as Webhooks.WebhookPayloadPullRequest;
+
+    console.log(github.context);
+    console.log(payload);
+
     // get email of author of first commit in PR
     const authorEmail = execFileSync(
       'git',
@@ -46,6 +50,7 @@ export async function runOnBlame(files: string[]): Promise<void> {
       { encoding: 'utf8', windowsHide: true, timeout: 5000 }
     ).trim();
     console.log('PR author email: %s', authorEmail);
+
     for (const [file, results] of Object.entries(lintResults.files)) {
       const blameMap = await blame(file);
       let headerPrinted = false;

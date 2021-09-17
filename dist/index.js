@@ -5881,6 +5881,8 @@ async function runOnBlame(files) {
         // blame files and output relevant errors
         const payload = github.context
             .payload;
+        console.log(github.context);
+        console.log(payload);
         // get email of author of first commit in PR
         const authorEmail = child_process_1.execFileSync('git', ['--no-pager', 'log', '--format=%ae', `${github.context.sha}^!`], { encoding: 'utf8', windowsHide: true, timeout: 5000 }).trim();
         console.log('PR author email: %s', authorEmail);
