@@ -5865,10 +5865,10 @@ async function runOnBlame(files) {
         if (standard)
             options.standard = standard;
         const lintResults = await php_codesniffer_1.lint(files, core.getInput('phpcs_path', { required: true }), options);
+        console.log(lintResults);
         const dontFailOnWarning = core.getInput('fail_on_warnings') == 'false' ||
             core.getInput('fail_on_warnings') === 'off';
         if (!lintResults.totals.errors) {
-            console.log(lintResults);
             if (dontFailOnWarning) {
                 console.log(`The fail_on_warnings option has been set to ${dontFailOnWarning}`);
                 return;
