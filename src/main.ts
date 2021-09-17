@@ -24,11 +24,12 @@ async function run(): Promise<void> {
 
     // run on complete files when they added or scope=files
     const scope = core.getInput('scope', { required: true });
-    if (files.added.length || scope === 'files')
+    if (files.added.length || scope === 'files') {
       runOnCompleteFiles(
         scope === 'files' ? [...files.added, ...files.modified] : files.added
       );
-    else if (files.modified.length && scope === 'blame') {
+    }
+    if (files.modified.length && scope === 'blame') {
       // run on blame
       await runOnBlame(files.modified);
     }
