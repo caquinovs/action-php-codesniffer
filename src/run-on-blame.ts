@@ -51,7 +51,7 @@ export async function runOnBlame(files: string[]): Promise<void> {
       for (const message of results.messages) {
         if (!blameMap.get(message.line)?.hash.startsWith(payload.pull_request.base.sha)) {
           // that's our line
-          // we simulate checkstyle output to be picked up by problem matched
+          // we simulate checkstyle output to be picked up by problem matcher
           if (!headerPrinted) {
             console.log(`<file name="${path.relative(process.cwd(), file)}">`);
             headerPrinted = true;
@@ -70,11 +70,12 @@ export async function runOnBlame(files: string[]): Promise<void> {
             core.setFailed(message.message);
           else if (message.type === 'ERROR') core.setFailed(message.message);
         } else {
+          // output the lines that were skipped over, to make future debugging easier
+          // the lines are prepended with debug so that the problem matcher
+          // will not pick these up and turn them into annotations
+          console.log(`debug: <file name="${path.relative(process.cwd(), file)}">`);
           console.log(
-            blameMap.get(message.line)?.hash
-          );
-          console.log(
-            '<error line="%d" column="%d" severity="%s" message="%s" source="%s"/>',
+            'debug: <error line="%d" column="%d" severity="%s" message="%s" source="%s"/>',
             message.line,
             message.column,
             message.type.toLowerCase(),

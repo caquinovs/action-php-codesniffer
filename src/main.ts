@@ -16,6 +16,7 @@ async function run(): Promise<void> {
     /**
      * Adding problem matcher to annotate files without token
      * @see {@link https://github.com/actions/setup-node/blob/a47b2f66c61e623b503818d97a63ce0fe087f700/src/setup-node.ts#L36}
+     * @see {@link https://github.com/actions/toolkit/blob/main/docs/problem-matchers.md}
      */
     const matchersPath = path.join(__dirname, '..', '.github');
     console.log(

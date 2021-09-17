@@ -3758,6 +3758,7 @@ async function run() {
         /**
          * Adding problem matcher to annotate files without token
          * @see {@link https://github.com/actions/setup-node/blob/a47b2f66c61e623b503818d97a63ce0fe087f700/src/setup-node.ts#L36}
+         * @see {@link https://github.com/actions/toolkit/blob/main/docs/problem-matchers.md}
          */
         const matchersPath = path.join(__dirname, '..', '.github');
         console.log(`##[add-matcher]${path.join(matchersPath, 'phpcs-matcher.json')}`);
@@ -5857,7 +5858,7 @@ const path = __importStar(__webpack_require__(622));
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
 async function runOnBlame(files) {
-    var _a, _b;
+    var _a;
     try {
         const options = {};
         const standard = core.getInput('standard');
@@ -5890,7 +5891,7 @@ async function runOnBlame(files) {
             for (const message of results.messages) {
                 if (!((_a = blameMap.get(message.line)) === null || _a === void 0 ? void 0 : _a.hash.startsWith(payload.pull_request.base.sha))) {
                     // that's our line
-                    // we simulate checkstyle output to be picked up by problem matched
+                    // we simulate checkstyle output to be picked up by problem matcher
                     if (!headerPrinted) {
                         console.log(`<file name="${path.relative(process.cwd(), file)}">`);
                         headerPrinted = true;
@@ -5904,8 +5905,11 @@ async function runOnBlame(files) {
                         core.setFailed(message.message);
                 }
                 else {
-                    console.log((_b = blameMap.get(message.line)) === null || _b === void 0 ? void 0 : _b.hash);
-                    console.log('<error line="%d" column="%d" severity="%s" message="%s" source="%s"/>', message.line, message.column, message.type.toLowerCase(), message.message, message.source);
+                    // output the lines that were skipped over, to make future debugging easier
+                    // the lines are prepended with debug so that the problem matcher
+                    // will not pick these up and turn them into annotations
+                    console.log(`debug: <file name="${path.relative(process.cwd(), file)}">`);
+                    console.log('debug: <error line="%d" column="%d" severity="%s" message="%s" source="%s"/>', message.line, message.column, message.type.toLowerCase(), message.message, message.source);
                 }
             }
         }
