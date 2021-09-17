@@ -40,7 +40,7 @@ export async function runOnBlame(files: string[]): Promise<void> {
     const payload = github.context
       .payload as Webhooks.WebhookPayloadPullRequest;
 
-    const blameOptions = {
+    const blameOptions: Record<string, string> = {
       rev: `${payload.pull_request.base.sha}..`
     };
 
