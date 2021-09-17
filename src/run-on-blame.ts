@@ -40,22 +40,15 @@ export async function runOnBlame(files: string[]): Promise<void> {
     const payload = github.context
       .payload as Webhooks.WebhookPayloadPullRequest;
 
-    console.log(github.context);
-    console.log(payload);
-
-    // get email of author of first commit in PR
-    const authorEmail = execFileSync(
-      'git',
-      ['--no-pager', 'log', '--format=%ae', `${github.context.sha}^!`],
-      { encoding: 'utf8', windowsHide: true, timeout: 5000 }
-    ).trim();
-    console.log('PR author email: %s', authorEmail);
+    const blameOptions = {
+      rev: `${payload.pull_request.base.sha}..`
+    };
 
     for (const [file, results] of Object.entries(lintResults.files)) {
-      const blameMap = await blame(file);
+      const blameMap = await blame(file, blameOptions);
       let headerPrinted = false;
       for (const message of results.messages) {
-        if (blameMap.get(message.line)?.authorMail === authorEmail) {
+        if (!blameMap.get(message.line)?.hash.startsWith('^')) {
           // that's our line
           // we simulate checkstyle output to be picked up by problem matched
           if (!headerPrinted) {
@@ -77,9 +70,7 @@ export async function runOnBlame(files: string[]): Promise<void> {
           else if (message.type === 'ERROR') core.setFailed(message.message);
         } else {
           console.log(
-            `Line ${message.line} was committed by email ${
-              blameMap.get(message.line)?.authorMail
-            }, which doesn't match the author email`
+            blameMap.get(message.line)?.hash
           );
           console.log(
             '<error line="%d" column="%d" severity="%s" message="%s" source="%s"/>',

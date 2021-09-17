@@ -5852,7 +5852,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const php_codesniffer_1 = __webpack_require__(160);
-const child_process_1 = __webpack_require__(129);
 const git_blame_json_1 = __webpack_require__(5);
 const path = __importStar(__webpack_require__(622));
 const core = __importStar(__webpack_require__(470));
@@ -5881,16 +5880,14 @@ async function runOnBlame(files) {
         // blame files and output relevant errors
         const payload = github.context
             .payload;
-        console.log(github.context);
-        console.log(payload);
-        // get email of author of first commit in PR
-        const authorEmail = child_process_1.execFileSync('git', ['--no-pager', 'log', '--format=%ae', `${github.context.sha}^!`], { encoding: 'utf8', windowsHide: true, timeout: 5000 }).trim();
-        console.log('PR author email: %s', authorEmail);
+        const blameOptions = {
+            rev: `${payload.pull_request.base.sha}..`
+        };
         for (const [file, results] of Object.entries(lintResults.files)) {
-            const blameMap = await git_blame_json_1.blame(file);
+            const blameMap = await git_blame_json_1.blame(file, blameOptions);
             let headerPrinted = false;
             for (const message of results.messages) {
-                if (((_a = blameMap.get(message.line)) === null || _a === void 0 ? void 0 : _a.authorMail) === authorEmail) {
+                if (!((_a = blameMap.get(message.line)) === null || _a === void 0 ? void 0 : _a.hash.startsWith('^'))) {
                     // that's our line
                     // we simulate checkstyle output to be picked up by problem matched
                     if (!headerPrinted) {
@@ -5906,7 +5903,7 @@ async function runOnBlame(files) {
                         core.setFailed(message.message);
                 }
                 else {
-                    console.log(`Line ${message.line} was committed by email ${(_b = blameMap.get(message.line)) === null || _b === void 0 ? void 0 : _b.authorMail}, which doesn't match the author email`);
+                    console.log((_b = blameMap.get(message.line)) === null || _b === void 0 ? void 0 : _b.hash);
                     console.log('<error line="%d" column="%d" severity="%s" message="%s" source="%s"/>', message.line, message.column, message.type.toLowerCase(), message.message, message.source);
                 }
             }
