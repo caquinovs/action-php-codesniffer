@@ -5888,7 +5888,7 @@ async function runOnBlame(files) {
             console.log(blameMap);
             let headerPrinted = false;
             for (const message of results.messages) {
-                if (!((_a = blameMap.get(message.line)) === null || _a === void 0 ? void 0 : _a.hash.startsWith('^'))) {
+                if (!((_a = blameMap.get(message.line)) === null || _a === void 0 ? void 0 : _a.hash.startsWith(payload.pull_request.base.sha))) {
                     // that's our line
                     // we simulate checkstyle output to be picked up by problem matched
                     if (!headerPrinted) {

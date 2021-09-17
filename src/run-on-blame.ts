@@ -49,7 +49,7 @@ export async function runOnBlame(files: string[]): Promise<void> {
       console.log(blameMap);
       let headerPrinted = false;
       for (const message of results.messages) {
-        if (!blameMap.get(message.line)?.hash.startsWith('^')) {
+        if (!blameMap.get(message.line)?.hash.startsWith(payload.pull_request.base.sha)) {
           // that's our line
           // we simulate checkstyle output to be picked up by problem matched
           if (!headerPrinted) {
