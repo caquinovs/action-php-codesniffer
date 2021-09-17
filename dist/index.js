@@ -5858,7 +5858,7 @@ const path = __importStar(__webpack_require__(622));
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
 async function runOnBlame(files) {
-    var _a;
+    var _a, _b;
     try {
         const options = {};
         const standard = core.getInput('standard');
@@ -5902,6 +5902,10 @@ async function runOnBlame(files) {
                         core.setFailed(message.message);
                     else if (message.type === 'ERROR')
                         core.setFailed(message.message);
+                }
+                else {
+                    console.log(`Line ${message.line} was committed by email ${(_b = blameMap.get(message.line)) === null || _b === void 0 ? void 0 : _b.authorMail}, which doesn't match the author email`);
+                    console.log('<error line="%d" column="%d" severity="%s" message="%s" source="%s"/>', message.line, message.column, message.type.toLowerCase(), message.message, message.source);
                 }
             }
         }

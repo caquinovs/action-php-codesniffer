@@ -25,7 +25,9 @@ export async function runOnBlame(files: string[]): Promise<void> {
       core.getInput('fail_on_warnings') === 'off';
     if (!lintResults.totals.errors) {
       if (dontFailOnWarning) {
-        console.log(`The fail_on_warnings option has been set to ${dontFailOnWarning}`);
+        console.log(
+          `The fail_on_warnings option has been set to ${dontFailOnWarning}`
+        );
         return;
       }
       if (!lintResults.totals.warnings) {
@@ -68,6 +70,20 @@ export async function runOnBlame(files: string[]): Promise<void> {
           if (message.type === 'WARNING' && !dontFailOnWarning)
             core.setFailed(message.message);
           else if (message.type === 'ERROR') core.setFailed(message.message);
+        } else {
+          console.log(
+            `Line ${message.line} was committed by email ${
+              blameMap.get(message.line)?.authorMail
+            }, which doesn't match the author email`
+          );
+          console.log(
+            '<error line="%d" column="%d" severity="%s" message="%s" source="%s"/>',
+            message.line,
+            message.column,
+            message.type.toLowerCase(),
+            message.message,
+            message.source
+          );
         }
       }
     }
