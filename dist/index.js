@@ -5889,7 +5889,8 @@ async function runOnBlame(files) {
             console.log(blameMap);
             let headerPrinted = false;
             for (const message of results.messages) {
-                if (!((_a = blameMap.get(message.line)) === null || _a === void 0 ? void 0 : _a.hash.startsWith(payload.pull_request.base.sha))) {
+                if (!((_a = blameMap
+                    .get(message.line)) === null || _a === void 0 ? void 0 : _a.hash.startsWith(payload.pull_request.base.sha))) {
                     // that's our line
                     // we simulate checkstyle output to be picked up by problem matcher
                     if (!headerPrinted) {
@@ -5908,8 +5909,8 @@ async function runOnBlame(files) {
                     // output the lines that were skipped over, to make future debugging easier
                     // the lines are prepended with debug so that the problem matcher
                     // will not pick these up and turn them into annotations
-                    console.log(`debug: <file name="${path.relative(process.cwd(), file)}">`);
-                    console.log('debug: <error line="%d" column="%d" severity="%s" message="%s" source="%s"/>', message.line, message.column, message.type.toLowerCase(), message.message, message.source);
+                    core.debug(`<file name="${path.relative(process.cwd(), file)}">`);
+                    core.debug(`<error line="${message.line}" column="${message.column}" severity="${message.type.toLowerCase()}" message="${message.message}" source="${message.source}"/>`);
                 }
             }
         }

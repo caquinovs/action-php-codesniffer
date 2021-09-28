@@ -1,5 +1,4 @@
 import { lint } from 'php-codesniffer';
-import { execFileSync } from 'child_process';
 import { blame } from 'git-blame-json';
 import * as path from 'path';
 import * as core from '@actions/core';
@@ -41,7 +40,7 @@ export async function runOnBlame(files: string[]): Promise<void> {
       .payload as Webhooks.WebhookPayloadPullRequest;
 
     const blameOptions: Record<string, string> = {
-      rev: `${payload.pull_request.base.sha}..`
+      rev: `${payload.pull_request.base.sha}..`,
     };
 
     for (const [file, results] of Object.entries(lintResults.files)) {
@@ -49,7 +48,11 @@ export async function runOnBlame(files: string[]): Promise<void> {
       console.log(blameMap);
       let headerPrinted = false;
       for (const message of results.messages) {
-        if (!blameMap.get(message.line)?.hash.startsWith(payload.pull_request.base.sha)) {
+        if (
+          !blameMap
+            .get(message.line)
+            ?.hash.startsWith(payload.pull_request.base.sha)
+        ) {
           // that's our line
           // we simulate checkstyle output to be picked up by problem matcher
           if (!headerPrinted) {
@@ -73,14 +76,13 @@ export async function runOnBlame(files: string[]): Promise<void> {
           // output the lines that were skipped over, to make future debugging easier
           // the lines are prepended with debug so that the problem matcher
           // will not pick these up and turn them into annotations
-          console.log(`debug: <file name="${path.relative(process.cwd(), file)}">`);
-          console.log(
-            'debug: <error line="%d" column="%d" severity="%s" message="%s" source="%s"/>',
-            message.line,
-            message.column,
-            message.type.toLowerCase(),
-            message.message,
-            message.source
+          core.debug(`<file name="${path.relative(process.cwd(), file)}">`);
+          core.debug(
+            `<error line="${message.line}" column="${
+              message.column
+            }" severity="${message.type.toLowerCase()}" message="${
+              message.message
+            }" source="${message.source}"/>`
           );
         }
       }
